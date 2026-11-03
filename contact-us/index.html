@@ -511,7 +511,7 @@ var e="script#wp-emoji-settings",t=document.querySelector(e);if(!(t instanceof H
      script.async=true;script.onload=resolve;script.onerror=function(){reject(new Error('Could not load verification.'))};document.head.appendChild(script);
    });
    widgetId=window.turnstile.render(slot,{
-     sitekey:config.siteKey,size:'invisible',execution:'execute',
+     sitekey:config.siteKey,appearance:'interaction-only',execution:'execute',
      callback:function(token){if(resolveToken)resolveToken(token)},
      'error-callback':function(code){verificationError=String(code||'unknown');if(resolveToken)resolveToken(null)}
    });
