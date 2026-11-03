@@ -30,7 +30,7 @@ export async function onRequestPost({request,env}){
   try {
     sent=await fetch('https://api.resend.com/emails',{
       method:'POST',headers:{Authorization:'Bearer '+env.RESEND_API_KEY,'content-type':'application/json'},
-      body:JSON.stringify({from:'Website Enquiries <'+env.CONTACT_FROM_EMAIL+'>',to:[env.CONTACT_TO_EMAIL],...(email?{reply_to:email}:{}),subject:'Brunette Roofing — New contact inquiry',html,text:plainText})
+      body:JSON.stringify({from:'Website Enquiries <'+env.CONTACT_FROM_EMAIL+'>',to:[env.CONTACT_TO_EMAIL],...(email?{reply_to:email}:{}),subject:'Brunette Roofing — New website enquiry',html,text:plainText})
     });
   }catch{return json({error:'Unable to send your message right now.'},502)}
   if(!sent.ok){console.error('Resend contact form error',sent.status,(await sent.text()).slice(0,400));return json({error:'Unable to send your message right now.'},502)}
