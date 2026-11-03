@@ -499,14 +499,18 @@ var e="script#wp-emoji-settings",t=document.querySelector(e);if(!(t instanceof H
   #brunette-project-lightbox{position:fixed;inset:0;z-index:2147483640;background:rgba(0,0,0,.94);display:flex;justify-content:center;align-items:center;padding:64px 70px;box-sizing:border-box}
   #brunette-project-lightbox *{box-sizing:border-box}
   #brunette-project-lightbox img{display:block;max-width:100%;max-height:calc(100vh - 128px);width:auto;height:auto;object-fit:contain;box-shadow:0 14px 65px rgba(0,0,0,.5)}
-  #brunette-project-lightbox button{position:absolute;border:0;border-radius:50%;background:rgba(255,255,255,.14);color:#fff;cursor:pointer;width:48px;height:48px;font-size:31px;display:grid;place-items:center;line-height:1}
-  #brunette-project-lightbox button:hover,#brunette-project-lightbox button:focus-visible{background:rgba(255,255,255,.27);outline:2px solid transparent}
-  #brunette-project-lightbox .bl-close{right:20px;top:18px;font-size:29px}
-  #brunette-project-lightbox .bl-prev{left:15px;top:50%;transform:translateY(-50%)}
-  #brunette-project-lightbox .bl-next{right:15px;top:50%;transform:translateY(-50%)}
-  #brunette-project-lightbox .bl-count{position:absolute;bottom:20px;left:0;right:0;text-align:center;color:#e9e9e9;font:14px/1.5 system-ui,sans-serif}
+  #brunette-project-lightbox button{appearance:none;-webkit-appearance:none;position:absolute;z-index:2;display:flex;align-items:center;justify-content:center;width:48px;height:48px;padding:0;border:1px solid rgba(255,255,255,.2);border-radius:50%;background:rgba(20,29,40,.72);color:#fff;cursor:pointer;box-shadow:0 4px 18px rgba(0,0,0,.16);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);transition:background .2s ease,border-color .2s ease,box-shadow .2s ease}
+  #brunette-project-lightbox button svg{display:block;width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
+  #brunette-project-lightbox button:hover{background:rgba(60,76,95,.92);border-color:rgba(255,255,255,.5);box-shadow:0 7px 24px rgba(0,0,0,.28)}
+  #brunette-project-lightbox button:focus-visible{outline:2px solid #fff;outline-offset:3px}
+  #brunette-project-lightbox .bl-close{right:24px;top:24px;width:44px;height:44px}
+  #brunette-project-lightbox .bl-close svg{width:19px;height:19px}
+  #brunette-project-lightbox .bl-prev{left:20px;top:50%;transform:translateY(-50%)}
+  #brunette-project-lightbox .bl-next{right:20px;top:50%;transform:translateY(-50%)}
+  #brunette-project-lightbox .bl-count{position:absolute;bottom:20px;left:0;right:0;text-align:center;color:#e9e9e9;font:500 13px/1.5 system-ui,sans-serif;letter-spacing:.04em}
   #bwg_thumbnails_mosaic_0 a.bwg_lightbox{cursor:zoom-in}
-  @media(max-width:600px){#brunette-project-lightbox{padding:62px 45px}#brunette-project-lightbox img{max-height:calc(100vh - 126px)}#brunette-project-lightbox button{width:38px;height:38px;font-size:26px}#brunette-project-lightbox .bl-prev{left:5px}#brunette-project-lightbox .bl-next{right:5px}}
+  @media(max-width:600px){#brunette-project-lightbox{padding:62px 45px}#brunette-project-lightbox img{max-height:calc(100vh - 126px)}#brunette-project-lightbox button{width:40px;height:40px}#brunette-project-lightbox button svg{width:19px;height:19px}#brunette-project-lightbox .bl-close{right:14px;top:14px;width:40px;height:40px}#brunette-project-lightbox .bl-prev{left:5px}#brunette-project-lightbox .bl-next{right:5px}}
+  @media(prefers-reduced-motion:reduce){#brunette-project-lightbox button{transition:none}}
 </style>
 <script id="brunette-project-lightbox-script">
 (function(){
@@ -521,7 +525,7 @@ var e="script#wp-emoji-settings",t=document.querySelector(e);if(!(t instanceof H
   overlay.setAttribute('role','dialog');
   overlay.setAttribute('aria-modal','true');
   overlay.setAttribute('aria-label','Past Projects photos');
-  overlay.innerHTML='<button type="button" class="bl-close" aria-label="Close photo">×</button><button type="button" class="bl-prev" aria-label="Previous photo">‹</button><img alt="Past project photo"><button type="button" class="bl-next" aria-label="Next photo">›</button><span class="bl-count" aria-live="polite"></span>';
+  overlay.innerHTML='<button type="button" class="bl-close" aria-label="Close photo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button><button type="button" class="bl-prev" aria-label="Previous photo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></button><img alt="Past project photo"><button type="button" class="bl-next" aria-label="Next photo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button><span class="bl-count" aria-live="polite"></span>';
   document.body.appendChild(overlay);
   var picture=overlay.querySelector('img'),counter=overlay.querySelector('.bl-count');
   var closeButton=overlay.querySelector('.bl-close');
