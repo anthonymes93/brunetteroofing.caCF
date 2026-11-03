@@ -477,5 +477,81 @@ var e="script#wp-emoji-settings",t=document.querySelector(e);if(!(t instanceof H
 			});
 		</script>
 		
+
+<!-- Static Cloudflare Pages contact form: Resend and Turnstile -->
+<style id="brunette-contact-css">
+ #forminator-module-1145{display:block!important}
+ #forminator-module-1145 .br-contact-status{margin:12px 0;font-size:14px}
+ #forminator-module-1145 .br-contact-status[hidden]{display:none}
+ #forminator-module-1145 .br-contact-status[data-error="true"]{color:#d24141}
+ #forminator-module-1145 .br-contact-success{display:flex;min-height:220px;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px 22px;background:#f4f7f5;color:#222;border-radius:10px}
+ #forminator-module-1145 .br-contact-success h3{font-size:25px;margin:0 0 10px}
+ #forminator-module-1145 .br-contact-success p{margin:0}
+</style>
+<script id="brunette-contact-js">
+(function(){
+ 'use strict';
+ var form=document.getElementById('forminator-module-1145');
+ if(!form)return;
+ form.style.display='block';
+ form.classList.remove('forminator_ajax');
+ var button=form.querySelector('button.forminator-button-submit');
+ var status=document.createElement('p');
+ status.className='br-contact-status';status.setAttribute('role','status');status.setAttribute('aria-live','polite');status.hidden=true;
+ button.parentNode.appendChild(status);
+ var slot=document.createElement('div');slot.id='br-contact-turnstile';button.parentNode.insertBefore(slot,button);
+ var widgetId=null,resolveToken=null,busy=false,verificationError='';
+ function show(text,isError){status.textContent=text;status.hidden=!text;status.dataset.error=isError?'true':'false'}
+ var ready=fetch('/api/contact-config',{cache:'no-store'}).then(async function(response){
+   if(!response.ok)throw new Error('Contact form configuration is unavailable.');
+   var config=await response.json();
+   if(!config.siteKey)throw new Error('Contact form verification is not configured yet.');
+   if(!window.turnstile)await new Promise(function(resolve,reject){
+     var script=document.createElement('script');script.src='https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+     script.async=true;script.onload=resolve;script.onerror=function(){reject(new Error('Could not load verification.'))};document.head.appendChild(script);
+   });
+   widgetId=window.turnstile.render(slot,{
+     sitekey:config.siteKey,size:'invisible',execution:'execute',
+     callback:function(token){if(resolveToken)resolveToken(token)},
+     'error-callback':function(code){verificationError=String(code||'unknown');if(resolveToken)resolveToken(null)}
+   });
+ });
+ ready.catch(function(error){show(error.message,true)});
+ function verify(){
+   return new Promise(function(resolve){
+     var settled=false;
+     var timeout=setTimeout(function(){finish(null)},15000);
+     function finish(token){if(settled)return;settled=true;clearTimeout(timeout);resolveToken=null;resolve(token)}
+     verificationError='';resolveToken=finish;
+     try{window.turnstile.execute(widgetId)}
+     catch(error){verificationError=error.message||'execution-error';finish(null)}
+   });
+ }
+ form.addEventListener('submit',async function(event){
+   event.preventDefault();event.stopImmediatePropagation();
+   if(busy)return;
+   var name=form.querySelector('[name="name-1"]').value.trim();
+   var email=form.querySelector('[name="email-1"]').value.trim();
+   var phone=form.querySelector('[name="phone-1"]').value.trim();
+   var message=form.querySelector('[name="textarea-1"]').value.trim();
+   if(!name||!email||!message){show('Please enter your name, email address and message.',true);return}
+   busy=true;button.disabled=true;button.textContent='Sending…';show('',false);
+   try{
+     await ready;
+     var token=await verify();
+     if(!token)throw new Error('Verification did not complete'+(verificationError?' (Turnstile '+verificationError+')':'')+'. Please try again.');
+     var controller=new AbortController();
+     var timeout=setTimeout(function(){controller.abort()},20000);
+     var response;
+     try{response=await fetch('/api/contact',{method:'POST',headers:{'content-type':'application/json'},signal:controller.signal,body:JSON.stringify({name:name,email:email,phone:phone,message:message,turnstileToken:token})})}finally{clearTimeout(timeout)}
+     var result=await response.json();
+     if(!response.ok||!result.ok)throw new Error(result.error||'Unable to send your message.');
+     form.innerHTML='<div class="br-contact-success" role="status"><h3>Thank you for reaching out!</h3><p>Your message has been sent. We’ll get back to you as soon as possible.</p></div>';
+   }catch(error){show(error.name==='AbortError'?'The request timed out. Please try again.':(error.message||'Unable to send your message.'),true)}
+   finally{busy=false;if(button.isConnected){button.disabled=false;button.textContent='Submit'}}
+ },true);
+})();
+</script>
+
 </body>
 </html>
